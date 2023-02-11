@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/esm/Button';
 
 const NavigationBar = () => {
 	
-	const [drip, setDrip] = useState(false);
+	const [drip, setDrip] = useState(true);
 	useEffect(() => {
 		if (drip) {
 			document.body.classList.add('drip');

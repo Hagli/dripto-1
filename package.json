@@ -1,7 +1,7 @@
 {
   "name": "dripto",
   "version": "0.1.0",
-  "homepage": "https://plumstream24.github.io/dripto-1",
+  "homepage": "https://hagli.github.io/dripto-1",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
