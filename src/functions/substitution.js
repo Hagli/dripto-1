@@ -3,7 +3,8 @@ import {create, all} from "mathjs";
 const config = {};
 const math = create(all, config);
 
-let lookupTable;
+let lookupTable = math.matrix();
+lookupTable.resize([0]);
 
 const createLookupTable = function(input_size) {
     const a = math.matrix();
@@ -49,16 +50,12 @@ const substitution = function(input, input_size) {
             cipher += s;
         }
 
-        return cipher;
+        return [cipher, lookupTable];
     }
     else {
         lookupTable.resize([0]);
-        return "Input size too small";
+        return ["∅", lookupTable];
     }
 }
 
-const inverseSubstitution = function(input, input_size) {
-    return math.add(lookupTable, 1);
-}
-
-export {substitution, inverseSubstitution};
+export {substitution};

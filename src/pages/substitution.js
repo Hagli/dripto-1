@@ -2,7 +2,7 @@ import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {Component, createRef} from 'react';
-import { substitution, inverseSubstitution } from "../functions/substitution";
+import { substitution } from "../functions/substitution";
 
 class Substitution extends Component {
     constructor(props) {
@@ -13,7 +13,8 @@ class Substitution extends Component {
             result : '',
             binary_result : '',
             unicode_result : '',
-            type: 'binary'
+            type: 'binary',
+            S_Box : ''
         }
         this.fileInput = createRef();
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -23,20 +24,27 @@ class Substitution extends Component {
         //handle text input
         if(this.fileInput.current.files[0] == null) {
             let cypher = substitution(this.state.message, this.state.input_size);
-            this.setState({result: cypher});
-            this.setState({binary_result: cypher});
+            this.setState({result: cypher[0]});
+            this.setState({binary_result: cypher[0]});
 
-            let bitDiff = cypher.length % 8;
-            if (bitDiff!==0){
-                for (let i = 0; i < 8 - bitDiff; i++){
-                    cypher += 0;
+            if(cypher[0]!=="∅"){
+                let bitDiff = cypher[0].length % 8;
+                if (bitDiff!==0){
+                    for (let i = 0; i < 8 - bitDiff; i++){
+                        cypher[0] += 0;
+                    }
                 }
+                let cipher = "";
+                for (let i = 0; i < cypher[0].length; i++) {
+                    cipher += String.fromCodePoint(parseInt(cypher[0].substring(i, i+8), 2));
+                }
+                this.setState({unicode_result: cipher});
             }
-            let cipher = "";
-            for (let i = 0; i < cypher.length; i++) {
-                cipher += String.fromCodePoint(parseInt(cypher.substring(i, i+8), 2));
+            else{
+                this.setState({unicode_result: cypher[0]});
             }
-            this.setState({unicode_result: cipher});
+
+            this.setState({S_Box: cypher[1]});
 
         } 
         //handle file input
@@ -45,20 +53,27 @@ class Substitution extends Component {
             fr.onload = () => {
                 this.setState({message: fr.result});
                 let cypher = substitution(this.state.message, this.state.input_size);
-                this.setState({result: cypher});
-                this.setState({binary_result: cypher});
+                this.setState({result: cypher[0]});
+                this.setState({binary_result: cypher[0]});
 
-                let bitDiff = cypher.length % 8;
-                if (bitDiff!==0){
-                    for (let i = 0; i < 8 - bitDiff; i++){
-                        cypher += 0;
+                if(cypher[0]!=="∅"){
+                    let bitDiff = cypher[0].length % 8;
+                    if (bitDiff!==0){
+                        for (let i = 0; i < 8 - bitDiff; i++){
+                            cypher[0] += 0;
+                        }
                     }
+                    let cipher = "";
+                    for (let i = 0; i < cypher[0].length; i++) {
+                        cipher += String.fromCodePoint(parseInt(cypher[0].substring(i, i+8), 2));
+                    }
+                    this.setState({unicode_result: cipher});
                 }
-                let cipher = "";
-                for (let i = 0; i < cypher.length; i++) {
-                    cipher += String.fromCodePoint(parseInt(cypher.substring(i, i+8), 2));
+                else{
+                    this.setState({unicode_result: cypher[0]});
                 }
-                this.setState({unicode_result: cipher});
+                
+                this.setState({S_Box: cypher[1]});
             }
             fr.readAsText(this.fileInput.current.files[0]);
 
@@ -66,29 +81,6 @@ class Substitution extends Component {
 
         this.setState({type: 'binary'});
         
-    }
-
-    handleDecrypt = () => {
-        //handle text input
-        if(this.fileInput.current.files[0] == null) {
-            let plainMsg = inverseSubstitution(this.state.message, this.state.input_size);
-            this.setState({result: plainMsg});
-            this.setState({unicode_result: plainMsg});
-        } 
-        //handle file input
-        else {
-            const fr = new FileReader();
-            fr.onload = () => {
-                this.setState({message: fr.result});
-                let plainMsg = inverseSubstitution(fr.result, this.state.input_size);
-                this.setState({result: plainMsg});
-                this.setState({unicode_result: plainMsg});
-            }
-            fr.readAsText(this.fileInput.current.files[0]);
-        }
-        
-        this.setState({type: 'binary'});
-
     }
 
     handleInputChange = (e) => {
@@ -116,7 +108,7 @@ class Substitution extends Component {
     }
 
     handleSaveFile = () => {
-        let blob = new Blob([this.state.unicode_result],
+        let blob = new Blob([this.state.result],
                 { type: "text/plain;charset=utf-8" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -143,22 +135,23 @@ class Substitution extends Component {
                     <Button variant="primary" type="button" onClick={this.handleEncrypt}>
                         Encrypt
                     </Button>
-                    <Button variant="secondary" type="button" onClick={this.handleDecrypt}>
-                        Decrypt
-                    </Button>
                 </Container>
             </Form>
-            <br/>
             
             <Form.Label>Output</Form.Label>
             <Form.Control as="textarea" rows={3} placeholder="" readOnly name="result" value={this.state.result}/>
-             <Container>
+            <Container>
                 <Form.Group className="mb-3">                
                     <Form.Check inline label="Binary" type="radio" value="binary" name="type" onChange={this.handleInputChange} checked={this.state.type === 'binary'}/>
                     <Form.Check inline label="Unicode" type="radio" value="unicode" name="type" onChange={this.handleInputChange} checked={this.state.type === 'unicode'}/>
                 </Form.Group>
+                <Button variant="primary" type="button" onClick={this.handleSaveFile}>Download as File</Button>
             </Container><br/>
-            <Button variant="primary" type="button" onClick={this.handleSaveFile}>Download as File</Button>
+            
+            <Form className="mb-5">
+                <Form.Label>The S-Box</Form.Label>
+                <Form.Control as="textarea" rows={3} placeholder="" readOnly name="S-Box" value={this.state.S_Box}/>
+            </Form>
 
             <Container className="mb-5"></Container>
         </Container>
