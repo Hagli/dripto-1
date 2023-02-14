@@ -9,6 +9,7 @@ import ExtVigenere from './pages/ext-vigenere';
 import Affine from './pages/affine';
 import Playfair from './pages/playfair';
 import Hill from './pages/hill';
+import Substitution from './pages/substitution';
 import { Container } from 'react-bootstrap';
 
 class App extends Component {
@@ -44,6 +45,9 @@ class App extends Component {
               <Button variant="dark" onClick={() => this.setState({visible: 6})}>
                 Hill Cypher
               </Button>
+              <Button variant="dark" onClick={() => this.setState({visible: 7})}>
+                Substitution
+              </Button>
             </Nav>
           </Container>
         </Navbar>
@@ -55,6 +59,7 @@ class App extends Component {
           this.state.visible === 4 ? <Affine /> :
           this.state.visible === 5 ? <Playfair /> :
           this.state.visible === 6 ? <Hill /> :
+          this.state.visible === 7 ? <Substitution /> :
           null}
         </Container>
       </div>
