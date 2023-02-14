@@ -111,7 +111,7 @@ class Substitution extends Component {
                     <Form.Control type="file" accept=".txt" ref={this.fileInput}/>
                     <Button variant="outline-secondary" size="sm" type="button" onClick={this.clearField} className="mt-1 mb-4">Clear</Button>
                     <br/>
-                    <Form.Label>a</Form.Label>
+                    <Form.Label>Input size</Form.Label>
                     <Form.Control type="number" pattern="[0-9]*" placeholder="" name="input_size" value={this.state.input_size} onChange={this.handleInputChange}></Form.Control>
                 </Form.Group>
 
