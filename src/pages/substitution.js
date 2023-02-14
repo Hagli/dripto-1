@@ -11,8 +11,9 @@ class Substitution extends Component {
             message : '',
             input_size : '',
             result : '',
-            fake_result : '',
-            spaced: 'no-space'
+            binary_result : '',
+            unicode_result : '',
+            type: 'binary'
         }
         this.fileInput = createRef();
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -23,7 +24,19 @@ class Substitution extends Component {
         if(this.fileInput.current.files[0] == null) {
             let cypher = substitution(this.state.message, this.state.input_size);
             this.setState({result: cypher});
-            this.setState({fake_result: cypher});
+            this.setState({binary_result: cypher});
+
+            let bitDiff = cypher.length % 8;
+            if (bitDiff!==0){
+                for (let i = 0; i < 8 - bitDiff; i++){
+                    cypher += 0;
+                }
+            }
+            let cipher = "";
+            for (let i = 0; i < cypher.length; i++) {
+                cipher += String.fromCodePoint(parseInt(cypher.substring(i, i+8), 2));
+            }
+            this.setState({unicode_result: cipher});
 
         } 
         //handle file input
@@ -33,13 +46,25 @@ class Substitution extends Component {
                 this.setState({message: fr.result});
                 let cypher = substitution(this.state.message, this.state.input_size);
                 this.setState({result: cypher});
-                this.setState({fake_result: cypher});
+                this.setState({binary_result: cypher});
+
+                let bitDiff = cypher.length % 8;
+                if (bitDiff!==0){
+                    for (let i = 0; i < 8 - bitDiff; i++){
+                        cypher += 0;
+                    }
+                }
+                let cipher = "";
+                for (let i = 0; i < cypher.length; i++) {
+                    cipher += String.fromCodePoint(parseInt(cypher.substring(i, i+8), 2));
+                }
+                this.setState({unicode_result: cipher});
             }
             fr.readAsText(this.fileInput.current.files[0]);
 
         }
 
-        this.setState({spaced: 'no-space'});
+        this.setState({type: 'binary'});
         
     }
 
@@ -48,7 +73,7 @@ class Substitution extends Component {
         if(this.fileInput.current.files[0] == null) {
             let plainMsg = inverseSubstitution(this.state.message, this.state.input_size);
             this.setState({result: plainMsg});
-            this.setState({fake_result: plainMsg});
+            this.setState({unicode_result: plainMsg});
         } 
         //handle file input
         else {
@@ -57,12 +82,12 @@ class Substitution extends Component {
                 this.setState({message: fr.result});
                 let plainMsg = inverseSubstitution(fr.result, this.state.input_size);
                 this.setState({result: plainMsg});
-                this.setState({fake_result: plainMsg});
+                this.setState({unicode_result: plainMsg});
             }
             fr.readAsText(this.fileInput.current.files[0]);
         }
         
-        this.setState({spaced: 'no-space'});
+        this.setState({type: 'binary'});
 
     }
 
@@ -75,15 +100,14 @@ class Substitution extends Component {
             [name]: value
         });
 
-        if (name === 'spaced') this.handleSpace(e);
+        if (name === 'type') this.handleType(e);
     }
 
-    handleSpace = (e) => {
-        if (e.target.value === 'spaced') {
-            let r = this.state.result.replace(/(.{8})/g,"$& ");
-            this.setState({result: r});
+    handleType = (e) => {
+        if (e.target.value === 'unicode') {
+            this.setState({result: this.state.unicode_result});
         } else {
-            this.setState({result: this.state.fake_result});
+            this.setState({result: this.state.binary_result});
         }
     }
 
@@ -92,7 +116,7 @@ class Substitution extends Component {
     }
 
     handleSaveFile = () => {
-        let blob = new Blob([this.state.fake_result],
+        let blob = new Blob([this.state.unicode_result],
                 { type: "text/plain;charset=utf-8" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -130,8 +154,8 @@ class Substitution extends Component {
             <Form.Control as="textarea" rows={3} placeholder="" readOnly name="result" value={this.state.result}/>
              <Container>
                 <Form.Group className="mb-3">                
-                    <Form.Check inline label="No Space" type="radio" value="no-space" name="spaced" onChange={this.handleInputChange} checked={this.state.spaced === 'no-space'}/>
-                    <Form.Check inline label="Spaced" type="radio" value="spaced" name="spaced" onChange={this.handleInputChange} checked={this.state.spaced === 'spaced'}/>
+                    <Form.Check inline label="Binary" type="radio" value="binary" name="type" onChange={this.handleInputChange} checked={this.state.type === 'binary'}/>
+                    <Form.Check inline label="Unicode" type="radio" value="unicode" name="type" onChange={this.handleInputChange} checked={this.state.type === 'unicode'}/>
                 </Form.Group>
             </Container><br/>
             <Button variant="primary" type="button" onClick={this.handleSaveFile}>Download as File</Button>
