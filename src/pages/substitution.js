@@ -26,24 +26,7 @@ class Substitution extends Component {
             let cypher = substitution(this.state.message, this.state.input_size);
             this.setState({result: cypher[0]});
             this.setState({binary_result: cypher[0]});
-
-            if(cypher[0]!=="∅"){
-                let bitDiff = cypher[0].length % 8;
-                if (bitDiff!==0){
-                    for (let i = 0; i < 8 - bitDiff; i++){
-                        cypher[0] += 0;
-                    }
-                }
-                let cipher = "";
-                for (let i = 0; i < cypher[0].length; i++) {
-                    cipher += String.fromCodePoint(parseInt(cypher[0].substring(i, i+8), 2));
-                }
-                this.setState({unicode_result: cipher});
-            }
-            else{
-                this.setState({unicode_result: cypher[0]});
-            }
-
+            this.setState({unicode_result: cypher[2]});
             this.setState({S_Box: cypher[1]});
 
         } 
@@ -55,25 +38,9 @@ class Substitution extends Component {
                 let cypher = substitution(this.state.message, this.state.input_size);
                 this.setState({result: cypher[0]});
                 this.setState({binary_result: cypher[0]});
-
-                if(cypher[0]!=="∅"){
-                    let bitDiff = cypher[0].length % 8;
-                    if (bitDiff!==0){
-                        for (let i = 0; i < 8 - bitDiff; i++){
-                            cypher[0] += 0;
-                        }
-                    }
-                    let cipher = "";
-                    for (let i = 0; i < cypher[0].length; i++) {
-                        cipher += String.fromCodePoint(parseInt(cypher[0].substring(i, i+8), 2));
-                    }
-                    this.setState({unicode_result: cipher});
-                }
-                else{
-                    this.setState({unicode_result: cypher[0]});
-                }
-                
+                this.setState({unicode_result: cypher[2]});
                 this.setState({S_Box: cypher[1]});
+                
             }
             fr.readAsText(this.fileInput.current.files[0]);
 

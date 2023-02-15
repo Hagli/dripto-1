@@ -37,7 +37,7 @@ const substitution = function(input, input_size) {
             }
         }
 
-        let cipher = "";
+        let binary_cypher = "";
         for (let i = 0; i < cypher.length; i += Number(input_size)){
             let currentByte = cypher.substring(i, i+input_size);
             let x = parseInt(currentByte.substring(1, input_size - 1), 2);
@@ -47,14 +47,25 @@ const substitution = function(input, input_size) {
             for (let j = 0; j < diff; j++){
                 s = 0+s;
             }
-            cipher += s;
+            binary_cypher += s;
         }
 
-        return [cipher, lookupTable];
+        bitDiff = binary_cypher.length % 8;
+        if (bitDiff!==0){
+            for (let i = 0; i < 8 - bitDiff; i++){
+                binary_cypher += 0;
+            }
+        }
+        let unicode_cypher = "";
+        for (let i = 0; i < binary_cypher.length; i++) {
+            unicode_cypher += String.fromCodePoint(parseInt(binary_cypher.substring(i, i+8), 2));
+        }
+
+        return [binary_cypher, lookupTable, unicode_cypher];
     }
     else {
         lookupTable.resize([0]);
-        return ["∅", lookupTable];
+        return ["∅", lookupTable, "∅"];
     }
 }
 
