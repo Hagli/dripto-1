@@ -57,7 +57,7 @@ const substitution = function(input, input_size) {
             }
         }
         let unicode_cypher = "";
-        for (let i = 0; i < binary_cypher.length; i++) {
+        for (let i = 0; i < binary_cypher.length; i += 8) {
             unicode_cypher += String.fromCodePoint(parseInt(binary_cypher.substring(i, i+8), 2));
         }
 

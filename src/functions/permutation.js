@@ -65,7 +65,7 @@ const permutation = function(input, box_width, box_height) {
         }*/
 
         let unicode_cypher = "";
-        for (let i = 0; i < binary_cypher.length; i++) {
+        for (let i = 0; i < binary_cypher.length; i += 8) {
             unicode_cypher += String.fromCodePoint(parseInt(binary_cypher.substring(i, i+8), 2));
         }
 
