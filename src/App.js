@@ -10,6 +10,7 @@ import Affine from './pages/affine';
 import Playfair from './pages/playfair';
 import Hill from './pages/hill';
 import Substitution from './pages/substitution';
+import Permutation from './pages/permutation';
 import { Container } from 'react-bootstrap';
 
 class App extends Component {
@@ -48,6 +49,9 @@ class App extends Component {
               <Button variant="dark" onClick={() => this.setState({visible: 7})}>
                 Substitution
               </Button>
+              <Button variant="dark" onClick={() => this.setState({visible: 8})}>
+                Permutation
+              </Button>
             </Nav>
           </Container>
         </Navbar>
@@ -60,6 +64,7 @@ class App extends Component {
           this.state.visible === 5 ? <Playfair /> :
           this.state.visible === 6 ? <Hill /> :
           this.state.visible === 7 ? <Substitution /> :
+          this.state.visible === 8 ? <Permutation /> :
           null}
         </Container>
       </div>

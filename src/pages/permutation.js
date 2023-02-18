@@ -2,19 +2,20 @@ import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {Component, createRef} from 'react';
-import { substitution } from "../functions/substitution";
+import { permutation } from "../functions/permutation";
 
-class Substitution extends Component {
+class Permutation extends Component {
     constructor(props) {
         super(props);
         this.state = {
             message : '',
-            input_size : '',
+            box_width : '',
+            box_height : '',
             result : '',
             binary_result : '',
             unicode_result : '',
             type: 'binary',
-            S_Box : ''
+            P_box : ''
         }
         this.fileInput = createRef();
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -23,11 +24,11 @@ class Substitution extends Component {
     handleEncrypt = () => {
         //handle text input
         if(this.fileInput.current.files[0] == null) {
-            let cypher = substitution(this.state.message, this.state.input_size);
+            let cypher = permutation(this.state.message, this.state.box_width, this.state.box_height);
             this.setState({result: cypher[0]});
             this.setState({binary_result: cypher[0]});
             this.setState({unicode_result: cypher[2]});
-            this.setState({S_Box: cypher[1]});
+            this.setState({P_box: cypher[1]});
 
         } 
         //handle file input
@@ -35,11 +36,11 @@ class Substitution extends Component {
             const fr = new FileReader();
             fr.onload = () => {
                 this.setState({message: fr.result});
-                let cypher = substitution(this.state.message, this.state.input_size);
+                let cypher = permutation(this.state.message, this.state.box_width, this.state.box_height);
                 this.setState({result: cypher[0]});
                 this.setState({binary_result: cypher[0]});
                 this.setState({unicode_result: cypher[2]});
-                this.setState({S_Box: cypher[1]});
+                this.setState({P_box: cypher[1]});
                 
             }
             fr.readAsText(this.fileInput.current.files[0]);
@@ -85,7 +86,7 @@ class Substitution extends Component {
     render() {
     return (
         <Container>
-            <h1 className="mb-5 mt-5">Substitution (With Random DES S-Box)</h1>
+            <h1 className="mb-5 mt-5">Permutation (With Random DES P-Box)</h1>
             <Form className="mb-5">
                 <Form.Group className="mb-3 mt-3">
                     <Form.Label>Plain Text / Cypher Text</Form.Label>
@@ -94,8 +95,10 @@ class Substitution extends Component {
                     <Form.Control type="file" accept=".txt" ref={this.fileInput}/>
                     <Button variant="outline-secondary" size="sm" type="button" onClick={this.clearField} className="mt-1 mb-4">Clear</Button>
                     <br/>
-                    <Form.Label>Input size</Form.Label>
-                    <Form.Control type="number" pattern="[0-9]*" placeholder="" name="input_size" value={this.state.input_size} onChange={this.handleInputChange}></Form.Control>
+                    <Form.Label>Box width</Form.Label>
+                    <Form.Control type="number" pattern="[0-9]*" placeholder="" name="box_width" value={this.state.box_width} onChange={this.handleInputChange}></Form.Control>
+                    <Form.Label>Box height</Form.Label>
+                    <Form.Control type="number" pattern="[0-9]*" placeholder="" name="box_height" value={this.state.box_height} onChange={this.handleInputChange}></Form.Control>
                 </Form.Group>
 
                 <Container className="d-flex gap-3">
@@ -116,8 +119,8 @@ class Substitution extends Component {
             </Container><br/>
             
             <Form className="mb-5">
-                <Form.Label>The S-Box</Form.Label>
-                <Form.Control as="textarea" rows={3} placeholder="" readOnly name="S-Box" value={this.state.S_Box}/>
+                <Form.Label>The P-Box</Form.Label>
+                <Form.Control as="textarea" rows={3} placeholder="" readOnly name="S-Box" value={this.state.P_box}/>
             </Form>
 
             <Container className="mb-5"></Container>
@@ -126,4 +129,4 @@ class Substitution extends Component {
     }
 }
 
-export default Substitution;
+export default Permutation;
